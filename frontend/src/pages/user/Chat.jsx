@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../../store/themeSlice";
 import AddUser from "../../components/AddUser";
+import Logo from "../../assets/logo.png";
 import {
     MessageSquare,
     Settings,
@@ -21,8 +22,13 @@ import {
     Hexagon
 } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+import useApi from "../../services/useApi";
+
 function Chat() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { post } = useApi();
     const theme = useSelector((state) => state.theme.theme);
     const isDark = theme === "dark";
 
@@ -31,6 +37,15 @@ function Chat() {
 
     // Real data integration point
     const contacts = [];
+
+    async function handleLogout() {
+        try {
+            await post("/logout");
+            navigate("/login");
+        } catch (err) {
+            console.error("Logout failed", err);
+        }
+    }
 
     return (
         <div className={`w-full h-screen relative overflow-hidden transition-colors duration-500 ${isDark ? "bg-[#0f172a]" : "bg-gradient-to-br from-[#e0f2fe] via-[#dbeafe] to-[#bfdbfe]"
@@ -52,8 +67,12 @@ function Chat() {
                 <div className={`w-20 hidden md:flex flex-col items-center py-8 gap-8 border-r transition-colors duration-300 ${isDark ? "border-slate-700/50" : "border-white/50"
                     }`}>
                     {/* Logo Placeholder */}
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                        <Hexagon className="text-white w-6 h-6" />
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center transition-transform hover:scale-110 duration-300 overflow-hidden shadow-lg shadow-blue-500/20">
+                        <img
+                            src={Logo}
+                            alt="App Logo"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
 
                     {/* Nav Items */}
@@ -77,11 +96,16 @@ function Chat() {
                         >
                             {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
                         </button>
-                        <button className={`p-3 rounded-xl transition-all duration-300 hover:scale-110 group ${isDark ? "text-slate-400 hover:bg-red-500/20 hover:text-red-400" : "text-slate-500 hover:bg-red-50 hover:text-red-500"
-                            }`}>
+                        <button
+                            onClick={handleLogout}
+                            className={`p-3 rounded-xl transition-all duration-300 hover:scale-110 group ${isDark ? "text-slate-400 hover:bg-red-500/20 hover:text-red-400" : "text-slate-500 hover:bg-red-50 hover:text-red-500"
+                                }`}>
                             <LogOut className="w-6 h-6" />
                         </button>
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 border-2 border-white shadow-md"></div>
+                        <div
+                            onClick={() => navigate("/profile")}
+                            className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 border-2 border-white shadow-md cursor-pointer hover:scale-110 transition-transform duration-200"
+                        ></div>
                     </div>
                 </div>
 

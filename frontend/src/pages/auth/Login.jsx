@@ -19,7 +19,6 @@ function Login() {
     e.preventDefault();
     try {
       const data = await post("/login", { email, password });
-      localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/chat");
     } catch (e) {
       console.log(e);
